@@ -21,6 +21,9 @@ import os
 from flask import Flask, request, jsonify, render_template
 
 
+app = Flask(__name__)
+
+
 def csv_to_json(csvfile, jsonfile):
     ''' Load the data in csvfile, convert it to a list of dictionaries,
     and then save the result as JSON to jsonfile.
@@ -60,13 +63,10 @@ def load_json(jsonfile):
     return data
 
 
-app = Flask(__name__)
-
 
 @app.route('/')
 def home():
-    '''This is what you will see if you go to http://127.0.0.1:5000.
-    You don't need to modify this.'''
+    '''This is what you will see if you go to http://127.0.0.1:5000.'''
     return render_template('index.html')
 
 

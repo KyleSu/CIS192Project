@@ -1,8 +1,38 @@
 <!DOCTYPE html>
 <html>
 	<head>
+        <link rel="stylesheet" href="http://getbootstrap.com/dist/css/bootstrap.css"> 
     </head>
     <body>
-        <h1>Collect data</h1>
+        <div class="row" style="margin-bottom: 20px;" align="center">
+            <div class="col-xs-4"></div>
+            <div class="col-xs-4">
+                <h1>Twitter Bot</h1>
+            </div>
+            <div class="col-xs-4"></div>
+        </div>
+        <form action="/searchuser" method="post" style="margin-bottom: 20px;">
+            <div class="row">
+                <div class="col-xs-4"></div>
+                <div class="col-xs-4">
+                    <input type="text" name="username" class="form-control input-lg" placeholder="Search username">
+                    <input type="submit" value="Search for user" class="btn btn-lg btn-primary btn-block">
+                </div>
+                <div class="col-xs-4"></div>
+            </div>
+        </form>
+        <form action="/searchhashtag" method="post">
+            <div class="row">
+                <div class="col-xs-4"></div>
+                <div class="col-xs-4">
+                    <input type="text" name="hashtag" class="form-control input-lg" placeholder="Search hashtag">
+                    <input type="submit" value="Search for hashtag" class="btn btn-lg btn-primary btn-block">
+                </div>
+                <div class="col-xs-4"></div>
+            </div>
+        </form>
+        <footer>
+            <p align="center">Created by Claire Huang & Kyle Su</p>
+        </footer>
     </body>
 </html>
