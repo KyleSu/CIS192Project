@@ -18,7 +18,7 @@ https://pypi.python.org/pypi/pep8
 import csv
 import json
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 
 
 def csv_to_json(csvfile, jsonfile):
@@ -60,14 +60,6 @@ def load_json(jsonfile):
     return data
 
 
-# Convert courses.csv to courses.json (uncomment when csv_to_json is
-# implemented).
-csv_to_json('courses.csv', 'courses.json')
-
-# Load the course data into a global variable COURSES, which should be used by
-# your Flask application (uncomment when load_json is implemented).
-COURSES = load_json('courses.json')
-
 app = Flask(__name__)
 
 
@@ -75,7 +67,7 @@ app = Flask(__name__)
 def home():
     '''This is what you will see if you go to http://127.0.0.1:5000.
     You don't need to modify this.'''
-    return 'Hello world!'
+    return render_template('index.html')
 
 
 @app.route('/courses/<dept>')
