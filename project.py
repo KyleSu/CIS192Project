@@ -19,7 +19,24 @@ import csv
 import json
 import os
 from flask import Flask, request, jsonify, render_template
+import requests
+import re
+import urllib
+from bs4 import BeautifulSoup
+import os
 
+
+def pull_info():
+  TWEETS = 'http://twittercounter.com/pages/100'
+  r = requests.get(TWEETS)
+  soup = BeautifulSoup(r.text, "lxml")
+  full_tag = soup.findAll('span',{"itemprop":True})
+  l = list()
+  for tag in full_tag:
+    if "alternateName" in tag['itemprop']:
+      l.append(tag.text[1:])
+  r.connection.close()
+  print (l)
 
 app = Flask(__name__)
 
@@ -157,6 +174,7 @@ def schedule():
 
 
 def main():
+    pull_info()
     app.debug = True
     app.run()
 
