@@ -4,9 +4,9 @@
         <link rel="stylesheet" href="http://getbootstrap.com/dist/css/bootstrap.css"> 
     </head>
     <body>
-        <h1>{{ user['username'] }}</h1>
+        <h1>{{ hashtag['text'] }}</h1>
         <ul>
-            {% for key, value in user['hashtags'] %}
+            {% for key, value in hashtag['users'] %}
             <li><h3>{{ key }}: {{ value }} uses</h3>
             {% endfor %}
         </ul>

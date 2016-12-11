@@ -69,6 +69,10 @@ def home():
     '''This is what you will see if you go to http://127.0.0.1:5000.'''
     return render_template('index.html')
 
+@app.route('/searchuser')
+
+@app.route('/searchhashtag')
+
 
 @app.route('/courses/<dept>')
 @app.route('/courses/<dept>/<code>')
