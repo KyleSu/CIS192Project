@@ -43,46 +43,6 @@ def pull_info():
 app = Flask(__name__)
 
 
-def csv_to_json(csvfile, jsonfile):
-    ''' Load the data in csvfile, convert it to a list of dictionaries,
-    and then save the result as JSON to jsonfile.
-
-    You can assume that the first line of csvfile will include the field names.
-    Each following line should be split into its fields and turned into a
-    dictionary. The output should be a list of dictionaries.
-
-    Hint: csv.DictReader will help here!
-    '''
-
-    dict_list = []
-    with open(csvfile) as data_file:
-        reader = csv.DictReader(data_file)
-        for row in reader:
-            dict_list.append(row)
-    with open(jsonfile, 'w+') as output_file:
-        json.dump(dict_list, output_file)
-
-
-def load_json(jsonfile):
-    ''' Load JSON data from the given filename. Note that this should
-    return Python data structures, not a string of JSON.
-
-    If jsonfile does not exist, raise an exception with the message
-    "No such file." If jsonfile does not contain valid JSON, raise an
-    exception with the message "Invalid JSON."
-    '''
-    if not os.path.isfile(jsonfile):
-        raise NameError("No such file.")
-    with open(jsonfile) as data_file:
-        try:
-            data = json.load(data_file)
-        except ValueError as e:
-            raise ValueError("Invalid JSON.")
-
-    return data
-
-
-
 @app.route('/')
 def home():
     '''This is what you will see if you go to http://127.0.0.1:5000.'''
