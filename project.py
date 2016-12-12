@@ -25,18 +25,20 @@ import urllib
 from bs4 import BeautifulSoup
 import os
 
+users = {}
+hashtags = {}
 
 def pull_info():
-  TWEETS = 'http://twittercounter.com/pages/100'
-  r = requests.get(TWEETS)
-  soup = BeautifulSoup(r.text, "lxml")
-  full_tag = soup.findAll('span',{"itemprop":True})
-  l = list()
-  for tag in full_tag:
-    if "alternateName" in tag['itemprop']:
-      l.append(tag.text[1:])
-  r.connection.close()
-  print (l)
+    TWEETS = 'http://twittercounter.com/pages/100'
+    r = requests.get(TWEETS)
+    soup = BeautifulSoup(r.text, "lxml")
+    full_tag = soup.findAll('span',{"itemprop":True})
+    l = list()
+    for tag in full_tag:
+        if "alternateName" in tag['itemprop']:
+            l.append(tag.text[1:])
+    r.connection.close()
+    '''print (l)'''
 
 app = Flask(__name__)
 
@@ -86,9 +88,18 @@ def home():
     '''This is what you will see if you go to http://127.0.0.1:5000.'''
     return render_template('index.html')
 
-@app.route('/searchuser')
+@app.route('/searchuser', methods=['POST'])
+def searchUser():
+    if request.form.get('name') in users:
+        user = request.form.get('name')
+    else:
+        print(request.form.get('name'))
+        return json.dumps(False)
+    return request.args.get('name')
 
-@app.route('/searchhashtag')
+@app.route('/searchhashtag', methods=['POST'])
+def searchHashtag():
+    print(request.form['hashtag'])
 
 
 @app.route('/courses/<dept>')
@@ -117,7 +128,7 @@ def courses(dept, code=None, section=None):
     CIS recitation sections.
     '''
 
-    return_list = []
+    '''return_list = []
     if code is None and section is None:
         if 'type' in request.args:
             return_list = [item for item in COURSES if item['dept'] == dept and
@@ -150,31 +161,8 @@ def courses(dept, code=None, section=None):
     data["results"] = return_list
     json_data = jsonify(data)
 
-    return json_data
+    return json_data'''
 
-
-# Implementing schedule() below is +10 extra credit!
-
-@app.route('/schedule', methods=['POST'])
-def schedule():
-    ''' A POST-only endpoint. Accept POST data of the form:
-    {'courses': [ list of courses ]}
-
-    Each course dictionary in the list should have 'dept', 'code', and
-    'section' keys. Look up each course and find its meeting times.
-    (If the given dictionary does not match any course, just skip it.)
-    Construct and return a corresponding JSON schedule, where keys are the
-    days of the week, and values are a list of courses that meet on that day.
-    See the test case for details. You can assume that the provided courses
-    don't conflict.
-
-    Some notes:
-    1. Remember that dictionaries are unordered data structures, so the order
-    of keys does not matter.
-    2. The class lists should be in alphabetical order of class name.
-    3. If there is no class on a day, don't include a key for that day.
-    '''
-    pass
 
 
 def main():
