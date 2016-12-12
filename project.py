@@ -15,24 +15,52 @@ https://pypi.python.org/pypi/pep8
 # format.  Next, you'll use this data as a source for serving through
 # your API.  Helper functions will probably be useful!
 
-import csv
+
 import json
-import os
+import functools
 from flask import Flask, request, jsonify, render_template
 import requests
-import re
-import urllib
 from bs4 import BeautifulSoup
-import os
+
+
+app = Flask(__name__)
+
+
+@functools.total_ordering
+class Hashtag:
+    def __init__(self, text):
+        self.text = text
+        self.count = 0
+        self.users = {}
+
+    def addTweet(self, user):
+        if user in self.users:
+            newCount = self.users[user] + 1
+            self.users[user] = newCount
+            self.count += 1
+        else:
+            self.users[user] = 1
+            self.count += 1
+
+    def __eq__(self, other):
+        return (self.count == other.count)
+
+    def __ne__(self, other):
+        return (self.count != other.count)
+
+    def __gt__(self, other):
+        return (self.count > other.count)
+
 
 users = {}
 hashtags = {}
+
 
 def pull_info():
     TWEETS = 'http://twittercounter.com/pages/100'
     r = requests.get(TWEETS)
     soup = BeautifulSoup(r.text, "lxml")
-    full_tag = soup.findAll('span',{"itemprop":True})
+    full_tag = soup.findAll('span', {"itemprop": True})
     l = list()
     for tag in full_tag:
         if "alternateName" in tag['itemprop']:
@@ -40,13 +68,12 @@ def pull_info():
     r.connection.close()
     '''print (l)'''
 
-app = Flask(__name__)
-
 
 @app.route('/')
 def home():
     '''This is what you will see if you go to http://127.0.0.1:5000.'''
     return render_template('index.html')
+
 
 @app.route('/searchuser', methods=['POST'])
 def searchUser():
@@ -56,6 +83,7 @@ def searchUser():
         print(request.form.get('name'))
         return json.dumps(False)
     return request.args.get('name')
+
 
 @app.route('/searchhashtag', methods=['POST'])
 def searchHashtag():
@@ -122,7 +150,6 @@ def courses(dept, code=None, section=None):
     json_data = jsonify(data)
 
     return json_data'''
-
 
 
 def main():
