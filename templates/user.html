@@ -4,12 +4,22 @@
         <link rel="stylesheet" href="http://getbootstrap.com/dist/css/bootstrap.css"> 
     </head>
     <body>
-        <h1>{{ username }}</h1>
-        <ul>
-            {% for hashtag in hashtags %}
-            <li><h3>{{ hashtag[0] }}: {{ hashtag[1] }} uses</h3>
-            {% endfor %}
-        </ul>
+        <div class="row" style="margin-bottom: 20px;" align="center">
+            <div class="col-xs-4"></div>
+            <div class="col-xs-4">
+                <h1>{{ username }}</h1>
+            </div>
+            <div class="col-xs-4"></div>
+        </div>
+        <div class="row" style="margin-bottom: 20px;" align="center">
+            <div class="col-xs-4"></div>
+            <div class="col-xs-4">
+                {% for hashtag in hashtags %}
+                <h3>#{{ hashtag[0] }}: {{ hashtag[1] }} uses</h3>
+                {% endfor %}
+            </div>
+            <div class="col-xs-4"></div>
+        </div>
         <div class="row">
 		  <div class="col-xs-12" align="center">
 		  	<a href="/" style="color: #CC0000">Return to home page</a>

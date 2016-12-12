@@ -17,6 +17,7 @@ https://pypi.python.org/pypi/pep8
 
 
 import json
+import operator
 import functools
 from flask import Flask, request, jsonify, render_template
 import requests
@@ -40,8 +41,8 @@ class Hashtag:
 
     def addTweet(self, user):
         if user in self.users:
-            newCount = self.users[user] + 1
-            self.users[user] = newCount
+            new_count = self.users[user] + 1
+            self.users[user] = new_count
             self.count += 1
         else:
             self.users[user] = 1
@@ -100,22 +101,44 @@ def home():
 def searchUser():
     if request.form.get('name') in users:
         user = request.form.get('name')
-        sorted_hashtags = sorted(users[user].items(), key=operator.itemgetter(1))
+        sorted_hashtags = sorted(users[user].items(), key=operator.itemgetter(1), reverse=True)
         return render_template('user.html', username=user, hashtags=sorted_hashtags)
     else:
-        sorted_hashtags = [('a', 5), ('b', 6)]
-        return render_template('user.html', username="hello", hashtags=sorted_hashtags)
         print(request.form.get('name'))
         return json.dumps(False)
 
 
 @app.route('/searchhashtag', methods=['POST'])
 def searchHashtag():
-    print(request.form['hashtag'])
+    if request.form.get('hashtag') in hashtags:
+        tag = request.form.get('hashtag')
+
+        hashtag_object = hashtags[tag]
+        num_uses = getattr(hashtag_object, 'count')
+        unsorted_users = getattr(hashtag_object, 'users')
+        sorted_users = sorted(unsorted_users.items(), key=operator.itemgetter(1), reverse=True)
+
+        return render_template('hashtag.html', tag=tag, num_uses=num_uses, users=sorted_users)
+    else:
+        return json.dumps(False)
 
 
 def main():
     '''pull_info()'''
+    jbiebertags = {}
+    jbiebertags['dog'] = 2
+    jbiebertags['cat'] = 3
+    jbiebertags['horse'] = 4
+    users['jbieber'] = jbiebertags
+
+    exampleHashtag = Hashtag("bae")
+    exampleHashtag.addTweet("kyle")
+    exampleHashtag.addTweet("claire")
+    exampleHashtag.addTweet("kyle")
+    exampleHashtag.addTweet("kyle")
+    hashtags['bae'] = exampleHashtag
+
+
     app.debug = True
     app.run()
 
