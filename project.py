@@ -15,22 +15,52 @@ https://pypi.python.org/pypi/pep8
 # format.  Next, you'll use this data as a source for serving through
 # your API.  Helper functions will probably be useful!
 
-import csv
+
 import json
-import os
+import functools
 from flask import Flask, request, jsonify, render_template
 import requests
-import re
-import urllib
 from bs4 import BeautifulSoup
-import from twitter import *
+from twitter import *
 
 consumer_key = "ssf7gtajPE8HRwsaWcEeVaOxh"
 consumer_secret = "	mFlYP2OtVuy5egZcxskh5R60MA3DpRpYHz21YyuUSu1023KBnN"
 access_key = "	808414961940758528-NYjteAFIdUjx5jaYeQYfB5bfuxJhDvS"
 access_secret = "ihMzFIXTiqlaMwjoza76YeVYT9n3nlSKs5AQnnSZqfZrB"
 
-def pull_info():
+app = Flask(__name__)
+
+
+@functools.total_ordering
+class Hashtag:
+    def __init__(self, text):
+        self.text = text
+        self.count = 0
+        self.users = {}
+
+    def addTweet(self, user):
+        if user in self.users:
+            newCount = self.users[user] + 1
+            self.users[user] = newCount
+            self.count += 1
+        else:
+            self.users[user] = 1
+            self.count += 1
+
+    def __eq__(self, other):
+        return (self.count == other.count)
+
+    def __ne__(self, other):
+        return (self.count != other.count)
+
+    def __gt__(self, other):
+        return (self.count > other.count)
+
+
+users = {}
+hashtags = {}
+
+def get_tweets(username):
   TWEETS = 'http://twittercounter.com/pages/100'
   r = requests.get(TWEETS)
   soup = BeautifulSoup(r.text, "lxml")
@@ -38,7 +68,7 @@ def pull_info():
   l = list()
   twitter = Twitter(
 		auth = OAuth(config[access_key], config[access_secret], config[consumer_key], config[consumer_secret]))
-  
+
   for tag in full_tag:
     if "alternateName" in tag['itemprop']:
         tag.text[1:] = {}
@@ -46,47 +76,18 @@ def pull_info():
   r.connection.close()
   print (l)
 
-app = Flask(__name__)
-
-
-def csv_to_json(csvfile, jsonfile):
-    ''' Load the data in csvfile, convert it to a list of dictionaries,
-    and then save the result as JSON to jsonfile.
-
-    You can assume that the first line of csvfile will include the field names.
-    Each following line should be split into its fields and turned into a
-    dictionary. The output should be a list of dictionaries.
-
-    Hint: csv.DictReader will help here!
-    '''
-
-    dict_list = []
-    with open(csvfile) as data_file:
-        reader = csv.DictReader(data_file)
-        for row in reader:
-            dict_list.append(row)
-    with open(jsonfile, 'w+') as output_file:
-        json.dump(dict_list, output_file)
-
-
-def load_json(jsonfile):
-    ''' Load JSON data from the given filename. Note that this should
-    return Python data structures, not a string of JSON.
-
-    If jsonfile does not exist, raise an exception with the message
-    "No such file." If jsonfile does not contain valid JSON, raise an
-    exception with the message "Invalid JSON."
-    '''
-    if not os.path.isfile(jsonfile):
-        raise NameError("No such file.")
-    with open(jsonfile) as data_file:
-        try:
-            data = json.load(data_file)
-        except ValueError as e:
-            raise ValueError("Invalid JSON.")
-
-    return data
-
+def pull_info():
+    TWEETS = 'http://twittercounter.com/pages/100'
+    r = requests.get(TWEETS)
+    soup = BeautifulSoup(r.text, "lxml")
+    full_tag = soup.findAll('span', {"itemprop": True})
+    l = list()
+    for tag in full_tag:
+        if "alternateName" in tag['itemprop']:
+            get_tweets(tag.text[1:])
+            l.append(tag.text[1:])
+    r.connection.close()
+    '''print (l)'''
 
 
 @app.route('/')
@@ -94,9 +95,20 @@ def home():
     '''This is what you will see if you go to http://127.0.0.1:5000.'''
     return render_template('index.html')
 
-@app.route('/searchuser')
 
-@app.route('/searchhashtag')
+@app.route('/searchuser', methods=['POST'])
+def searchUser():
+    if request.form.get('name') in users:
+        user = request.form.get('name')
+    else:
+        print(request.form.get('name'))
+        return json.dumps(False)
+    return request.args.get('name')
+
+
+@app.route('/searchhashtag', methods=['POST'])
+def searchHashtag():
+    print(request.form['hashtag'])
 
 
 @app.route('/courses/<dept>')
@@ -125,7 +137,7 @@ def courses(dept, code=None, section=None):
     CIS recitation sections.
     '''
 
-    return_list = []
+    '''return_list = []
     if code is None and section is None:
         if 'type' in request.args:
             return_list = [item for item in COURSES if item['dept'] == dept and
@@ -158,31 +170,7 @@ def courses(dept, code=None, section=None):
     data["results"] = return_list
     json_data = jsonify(data)
 
-    return json_data
-
-
-# Implementing schedule() below is +10 extra credit!
-
-@app.route('/schedule', methods=['POST'])
-def schedule():
-    ''' A POST-only endpoint. Accept POST data of the form:
-    {'courses': [ list of courses ]}
-
-    Each course dictionary in the list should have 'dept', 'code', and
-    'section' keys. Look up each course and find its meeting times.
-    (If the given dictionary does not match any course, just skip it.)
-    Construct and return a corresponding JSON schedule, where keys are the
-    days of the week, and values are a list of courses that meet on that day.
-    See the test case for details. You can assume that the provided courses
-    don't conflict.
-
-    Some notes:
-    1. Remember that dictionaries are unordered data structures, so the order
-    of keys does not matter.
-    2. The class lists should be in alphabetical order of class name.
-    3. If there is no class on a day, don't include a key for that day.
-    '''
-    pass
+    return json_data'''
 
 
 def main():
