@@ -23,8 +23,12 @@ import requests
 import re
 import urllib
 from bs4 import BeautifulSoup
-import os
+import from twitter import *
 
+consumer_key = "ssf7gtajPE8HRwsaWcEeVaOxh"
+consumer_secret = "	mFlYP2OtVuy5egZcxskh5R60MA3DpRpYHz21YyuUSu1023KBnN"
+access_key = "	808414961940758528-NYjteAFIdUjx5jaYeQYfB5bfuxJhDvS"
+access_secret = "ihMzFIXTiqlaMwjoza76YeVYT9n3nlSKs5AQnnSZqfZrB"
 
 def pull_info():
   TWEETS = 'http://twittercounter.com/pages/100'
@@ -32,8 +36,12 @@ def pull_info():
   soup = BeautifulSoup(r.text, "lxml")
   full_tag = soup.findAll('span',{"itemprop":True})
   l = list()
+  twitter = Twitter(
+		auth = OAuth(config[access_key], config[access_secret], config[consumer_key], config[consumer_secret]))
+  
   for tag in full_tag:
     if "alternateName" in tag['itemprop']:
+        tag.text[1:] = {}
       l.append(tag.text[1:])
   r.connection.close()
   print (l)
