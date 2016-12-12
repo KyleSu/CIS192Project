@@ -53,8 +53,8 @@
                         if (data === "false") {
                             alert("Username not found");
                         } else {
-                            console.log(data);
-                            // Redirected to user.html
+                            $("html").empty();
+                            $("html").append(data);
                         }
                     });
                 }
