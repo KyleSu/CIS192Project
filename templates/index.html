@@ -61,7 +61,7 @@
         <script>
             var searchUser = function () {
                 event.preventDefault();
-                console.log($('#username').val());
+
                 var username = $('#username').val();
                 if (username === "") {
                     alert("Empty username");
@@ -69,8 +69,6 @@
                     var postUsername = {
                         name: username
                     };
-
-                    console.log("hello: " + postUsername.name);
 
                     $.post("/searchuser", postUsername, function (data) {
                         if (data === "false") {
@@ -84,7 +82,7 @@
             }
             var searchHashtag = function () {
                 event.preventDefault();
-                console.log($('#hashtag').val());
+
                 var hashtag = $('#hashtag').val();
                 if (hashtag === "") {
                     alert("Empty hashtag");
@@ -92,8 +90,6 @@
                     var postHashtag = {
                         hashtag: hashtag
                     };
-
-                    console.log("hello: " + postHashtag.hashtag);
 
                     $.post("/searchhashtag", postHashtag, function (data) {
                         if (data === "false") {
