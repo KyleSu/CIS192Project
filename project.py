@@ -18,6 +18,7 @@ https://pypi.python.org/pypi/pep8
 
 import json
 import functools
+import operator
 from flask import Flask, request, jsonify, render_template
 import requests
 from bs4 import BeautifulSoup
@@ -132,7 +133,7 @@ def searchHashtag():
 
 
 def main():
-    '''pull_info()''''
+    '''pull_info()'''
     jbiebertags = {}
     jbiebertags['dog'] = 2
     jbiebertags['cat'] = 3
