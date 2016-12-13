@@ -79,6 +79,7 @@ def get_tweets(username):
     auth.set_access_token(access_key, access_secret)
     api = tweepy.API(auth)
     new_tweets = api.user_timeline(screen_name = username,count=10)
+    userDict = dict()
     for status in new_tweets:
         listText = status.entities.get('hashtags')
         for dictItem in listText:
