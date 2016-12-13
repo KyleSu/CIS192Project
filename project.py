@@ -109,81 +109,42 @@ def home():
 def searchUser():
     if request.form.get('name') in users:
         user = request.form.get('name')
+        sorted_hashtags = sorted(users[user].items(), key=operator.itemgetter(1), reverse=True)
+        return render_template('user.html', username=user, hashtags=sorted_hashtags)
     else:
         print(request.form.get('name'))
         return json.dumps(False)
-    return request.args.get('name')
 
 
 @app.route('/searchhashtag', methods=['POST'])
 def searchHashtag():
-    print(request.form['hashtag'])
+    if request.form.get('hashtag') in hashtags:
+        tag = request.form.get('hashtag')
 
+        hashtag_object = hashtags[tag]
+        num_uses = getattr(hashtag_object, 'count')
+        unsorted_users = getattr(hashtag_object, 'users')
+        sorted_users = sorted(unsorted_users.items(), key=operator.itemgetter(1), reverse=True)
 
-@app.route('/courses/<dept>')
-@app.route('/courses/<dept>/<code>')
-@app.route('/courses/<dept>/<code>/<section>')
-def courses(dept, code=None, section=None):
-    ''' Returns a list of courses matching the query parameters.
-
-    The response should be JSON of the following format:
-    { "results": [list of courses] }
-    Each course in the list should be represented by a dictionary.
-
-    ** Note that JSON should never have lists at the top level due to security
-    issues with JavaScript! **
-    See http://flask.pocoo.org/docs/security/#json-security.
-    That's why we return a dictionary with one key/value pair instead.
-
-    For any parameters not provided, match any value for that parameter.
-    For instance, accessing /courses/cis should return a list of all CIS
-    courses, and accessing courcies/cis/110 should return a list of all
-    sections for CIS 110.
-
-    There is also an optional GET request parameter for the 'type' key
-    found in the CSV file. You should detect that and use it if it is provided.
-    For instance, accessing /courses/cis?type=REC should return a list of all
-    CIS recitation sections.
-    '''
-
-    '''return_list = []
-    if code is None and section is None:
-        if 'type' in request.args:
-            return_list = [item for item in COURSES if item['dept'] == dept and
-                           item['type'] == request.args.get('type')]
-        else:
-            return_list = [item for item in COURSES if item['dept'] == dept]
-    elif code is None:
-        if 'type' in request.args:
-            return_list = [item for item in COURSES if item['dept'] == dept and
-                           item['section'] == section and item['type'] == request.args.get('type')]
-        else:
-            return_list = [item for item in COURSES if item['dept'] == dept and
-                           item['section'] == section]
-    elif section is None:
-        if 'type' in request.args:
-            return_list = [item for item in COURSES if item['dept'] == dept and
-                           item['code'] == code and item['type'] == request.args.get('type')]
-        else:
-            return_list = [item for item in COURSES if item['dept'] == dept and
-                           item['code'] == code]
+        return render_template('hashtag.html', tag=tag, num_uses=num_uses, users=sorted_users)
     else:
-        if 'type' in request.args:
-            return_list = [item for item in COURSES if item['dept'] == dept and
-                           item['code'] == code and item['section'] == section and
-                           item['type'] == request.args.get('type')]
-        else:
-            return_list = [item for item in COURSES if item['dept'] == dept and
-                           item['code'] == code and item['section'] == section]
-    data = {}
-    data["results"] = return_list
-    json_data = jsonify(data)
-
-    return json_data'''
+        return json.dumps(False)
 
 
 def main():
-    pull_info()
+    '''pull_info()''''
+    jbiebertags = {}
+    jbiebertags['dog'] = 2
+    jbiebertags['cat'] = 3
+    jbiebertags['horse'] = 4
+    users['jbieber'] = jbiebertags
+
+    exampleHashtag = Hashtag("bae")
+    exampleHashtag.addTweet("kyle")
+    exampleHashtag.addTweet("claire")
+    exampleHashtag.addTweet("kyle")
+    exampleHashtag.addTweet("kyle")
+    hashtags['bae'] = exampleHashtag
     app.debug = True
     app.run()
 
