@@ -3,7 +3,6 @@
 	<head>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <link rel="stylesheet" href="http://getbootstrap.com/dist/css/bootstrap.css"> 
-        <script type="text/javascript" src="./scripts.js"></script>
     </head>
     <body>
         <div class="row" style="margin-bottom: 20px;" align="center">
@@ -13,7 +12,7 @@
             </div>
             <div class="col-xs-4"></div>
         </div>
-        <form id="usersubmitform" action="/searchuser" method="post" style="margin-bottom: 20px;" onsubmit="searchUser(); return false">
+        <form id="usersubmitform" action="/searchuser" method="post" style="margin-bottom: 20px;" onsubmit="searchUser()">
             <div class="row">
                 <div class="col-xs-4"></div>
                 <div class="col-xs-4">
@@ -23,7 +22,7 @@
                 <div class="col-xs-4"></div>
             </div>
         </form>
-        <form id="hashtagsubmitform" action="/searchhashtag" method="post" onsubmit="searchHashtag(); return false">
+        <form id="hashtagsubmitform" action="/searchhashtag" method="post" onsubmit="searchHashtag()">
             <div class="row">
                 <div class="col-xs-4"></div>
                 <div class="col-xs-4">
@@ -36,5 +35,53 @@
         <footer>
             <p align="center">Created by Claire Huang & Kyle Su</p>
         </footer>
+        <script>
+            var searchUser = function () {
+                event.preventDefault();
+                console.log($('#username').val());
+                var username = $('#username').val();
+                if (username === "") {
+                    alert("Empty username");
+                } else {
+                    var postUsername = {
+                        name: username
+                    };
+
+                    console.log("hello: " + postUsername.name);
+
+                    $.post("/searchuser", postUsername, function (data) {
+                        if (data === "false") {
+                            alert("Username not found");
+                        } else {
+                            $("html").empty();
+                            $("html").append(data);
+                        }
+                    });
+                }
+            }
+            var searchHashtag = function () {
+                event.preventDefault();
+                console.log($('#hashtag').val());
+                var hashtag = $('#hashtag').val();
+                if (hashtag === "") {
+                    alert("Empty hashtag");
+                } else {
+                    var postHashtag = {
+                        hashtag: hashtag
+                    };
+
+                    console.log("hello: " + postHashtag.hashtag);
+
+                    $.post("/searchhashtag", postHashtag, function (data) {
+                        if (data === "false") {
+                            alert("Hashtag not found");
+                        } else {
+                            $("html").empty();
+                            $("html").append(data);
+                        }
+                    });
+                }
+            }
+        </script>
     </body>
 </html>

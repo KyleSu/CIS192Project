@@ -1,5 +1,5 @@
 
-var searchUser = function () {
+function searchUser() {
     event.preventDefault();
     console.log($('#username').val());
     var username = $('#username').val();
@@ -22,7 +22,7 @@ var searchUser = function () {
         });
     }
 }
-var searchHashtag = function () {
+function searchHashtag() {
     event.preventDefault();
     console.log($('#hashtag').val());
     var hashtag = $('#hashtag').val();
