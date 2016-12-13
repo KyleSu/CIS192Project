@@ -58,52 +58,74 @@ class Hashtag:
     def __gt__(self, other):
         return (self.count > other.count)
 
+    def __len__(self):
+        return self.count
+
 
 users = {}
 hashtags = {}
+topten_hashtags = []
+topten_data = []
+total_hashtags = 0
+
 
 def get_tweets(username):
+    if username not in users:
+        users[username] = {}
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    # redirect_user(auth.get_authorization_url())
-    # try:
-    #     redirect_url = auth.get_authorization_url()
-    # except tweepy.TweepError:
-    #     print ('Error! Failed to get request token.')
-    # verifier = raw_input('Verifier:')
-    # try:
-    #     auth.get_access_token(verifier)
-    # except tweepy.TweepError:
-    #     print ('Error! Failed to get access token.')
-    # key = auth.access_token
-    # secret = auth.access_token_secret
-    # auth.set_access_token(key, secret)
     auth.set_access_token(access_key, access_secret)
     api = tweepy.API(auth)
-    new_tweets = api.user_timeline(screen_name = username,count=10)
-    userDict = dict()
+    new_tweets = api.user_timeline(screen_name=username, count=50)
     for status in new_tweets:
-        listText = status.entities.get('hashtags')
-        for dictItem in listText:
-            print(dictItem.get('text'))
+        list_text = status.entities.get('hashtags')
+        for dict_item in list_text:
+            hashtag_text = dict_item.get('text')
+            ''' Update users dictionary '''
+            if hashtag_text in users[username]:
+                new_count = users[username][hashtag_text] + 1
+                users[username][hashtag_text] = new_count
+            else:
+                users[username][hashtag_text] = 1
+            ''' Update hashtags dictionary '''
+            if hashtag_text in hashtags:
+                hashtags[hashtag_text].addTweet(username)
+            else:
+                new_hashtag = Hashtag(hashtag_text)
+                hashtags[hashtag_text] = new_hashtag
+                hashtags[hashtag_text].addTweet(username)
 
 def pull_info():
     TWEETS = 'http://twittercounter.com/pages/100'
     r = requests.get(TWEETS)
     soup = BeautifulSoup(r.text, "lxml")
-    full_tag = soup.findAll('span', {"itemprop": True})
+
     l = list()
+    full_tag = soup.findAll('span', {"itemprop": True})
+
     for tag in full_tag:
         if "alternateName" in tag['itemprop']:
             get_tweets(tag.text[1:])
             l.append(tag.text[1:])
-    r.connection.close()
-    '''print (l)'''
 
+    r.connection.close()
+
+    hashtag_counter = (len(hashtag_object) for hashtag_object in hashtags.values())
+    global total_hashtags
+    for x in range(0, len(hashtags.keys())):
+        total_hashtags += next(hashtag_counter)
+    topten_hashtags = sorted(hashtags.values(), key=operator.attrgetter('count'), reverse=True)[:10]
+
+    for i in range(len(topten_hashtags)):
+        hashtag_object = topten_hashtags[i]
+        hashtag_data = (getattr(hashtag_object, 'text'), getattr(hashtag_object, 'count'))
+        topten_data.append(hashtag_data)
 
 @app.route('/')
 def home():
     '''This is what you will see if you go to http://127.0.0.1:5000.'''
-    return render_template('index.html')
+    global total_hashtags
+
+    return render_template('index.html', num_hashtags=total_hashtags, topten_data=topten_data)
 
 
 @app.route('/searchuser', methods=['POST'])
@@ -113,7 +135,6 @@ def searchUser():
         sorted_hashtags = sorted(users[user].items(), key=operator.itemgetter(1), reverse=True)
         return render_template('user.html', username=user, hashtags=sorted_hashtags)
     else:
-        print(request.form.get('name'))
         return json.dumps(False)
 
 
@@ -133,20 +154,8 @@ def searchHashtag():
 
 
 def main():
-    '''pull_info()'''
-    jbiebertags = {}
-    jbiebertags['dog'] = 2
-    jbiebertags['cat'] = 3
-    jbiebertags['horse'] = 4
-    users['jbieber'] = jbiebertags
-
-    exampleHashtag = Hashtag("bae")
-    exampleHashtag.addTweet("kyle")
-    exampleHashtag.addTweet("claire")
-    exampleHashtag.addTweet("kyle")
-    exampleHashtag.addTweet("kyle")
-    hashtags['bae'] = exampleHashtag
-    app.debug = True
+    pull_info()
+    app.debug = False
     app.run()
 
 

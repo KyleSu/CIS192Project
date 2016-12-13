@@ -12,6 +12,15 @@
             </div>
             <div class="col-xs-4"></div>
         </div>
+
+        <div class="row" style="margin-bottom: 20px;" align="center">
+            <div class="col-xs-4"></div>
+            <div class="col-xs-4">
+                <h2>Total hashtags used: {{ num_hashtags }}</h1>
+            </div>
+            <div class="col-xs-4"></div>
+        </div>
+
         <form id="usersubmitform" action="/searchuser" method="post" style="margin-bottom: 20px;" onsubmit="searchUser()">
             <div class="row">
                 <div class="col-xs-4"></div>
@@ -22,6 +31,7 @@
                 <div class="col-xs-4"></div>
             </div>
         </form>
+
         <form id="hashtagsubmitform" action="/searchhashtag" method="post" onsubmit="searchHashtag()">
             <div class="row">
                 <div class="col-xs-4"></div>
@@ -32,9 +42,22 @@
                 <div class="col-xs-4"></div>
             </div>
         </form>
+
+        <div class="row" style="margin-bottom: 20px;" align="center">
+            <div class="col-xs-4"></div>
+            <div class="col-xs-4">
+                <h2>Most popular hashtags:</h1>
+                {% for key, value in topten_data %}
+                <h3>#{{ key }}: {{ value }} uses</h3>
+                {% endfor %}
+            </div>
+            <div class="col-xs-4"></div>
+        </div>
+
         <footer>
             <p align="center">Created by Claire Huang & Kyle Su</p>
         </footer>
+
         <script>
             var searchUser = function () {
                 event.preventDefault();
